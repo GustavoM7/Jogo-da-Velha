@@ -9,10 +9,10 @@ Jogo da Velha em C
 - Função de pause.
 - Uso de ponteiros
 - Detecção de vitorias nas linhas e colunas.
+- Impedir sobreposição de jogadas.
 
 #### Em progresso:
 
-- Impedir sobreposição de jogadas.
 - Cores no terminal.
 - Tratamento de erros de entrada.
 - Menu incial do jogo.

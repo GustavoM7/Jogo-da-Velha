@@ -12,16 +12,19 @@ int colunaCheck(int linha, char **matriz, char jogador);
 //Função para checagem de fim de jogo:
 int check(char **matriz);
 
-//Função para imprimir tabela no terminal:
+//Procedimento de impressão de tabela no terminal:
 void imprime(char **matriz);
 
-//Função para pausar o jogo;
+//Procedimento para pausa do jogo;
 void pausar();
+
+//Procedimento de controle de entradas:
+void jogada(char **matriz, char jogador);
 
 int main (){
 	int linha, coluna, i, j, RParcial;
 
-	printf("\n---Bem vindo ao Jogo da Velha em C---\n\n");	
+	printf("\n### Bem vindo ao Jogo da Velha em C ###\n\n");	
 	printf("Encerre o jogo com comando Ctrl + C\n");
 	pausar();
 
@@ -39,29 +42,11 @@ int main (){
 	imprime(matriz);
 
 	while(check(matriz) == 1){
+		
+		//Jogada do primeiro jogador:
+		printf("## Jogador X ##\n");
+		jogada(matriz, 'X');
 
-		printf("Jogador X: Entre linha e coluna\nLinha: ");
-		scanf(" %d", &linha);
-
-		while(linha > 3 || linha < 1){
-			printf("Entrada inválida!\n");
-			printf("\nLinha(1 <--> 3): ");
-			scanf(" %d", &linha);
-
-		}
-
-		printf("Coluna: ");
-		scanf(" %d", &coluna);
-
-
-
-		while(coluna > 3 || coluna < 1){
-			printf("Entrada inválida!\n");
-			printf("\nColuna(1 <--> 3): ");
-			scanf(" %d", &coluna);
-		}
-
-		matriz[linha-1][coluna-1] = 'X';
 		imprime(matriz);
 
 		RParcial = check(matriz); //Recebendo resultado parcial após jogada.
@@ -69,29 +54,16 @@ int main (){
 		//Jogador 2 jogará se jogador 1 não tiver ganho.
 		if(RParcial == 1){
 
-			printf("Jogador O: Entre linha e coluna\nLinha: ");
-			scanf(" %d", &linha);
+			//Jogada do segundo jogador:
+			printf("## Jogador O ##\n");
+			jogada(matriz, 'O');
 
-			while(linha > 3 || linha < 1){
-				printf("Entrada inválida!\n");
-				printf("\nLinha(1 <--> 3): ");
-				scanf(" %d", &linha);
-			}
+			imprime(matriz);
 
-			printf("Coluna: ");
-			scanf(" %d", &coluna);
-
-			while(coluna > 3 || coluna < 1){
-				printf("Entrada inválida!\n");
-				printf("\nColuna(1 <--> 3): ");
-				scanf(" %d", &coluna);
-			}
-
-			matriz[linha-1][coluna-1] = 'O';
+			RParcial = check(matriz); //Recebendo resultado parcial após jogada.
 			imprime(matriz);
 		}
 
-		RParcial = check(matriz); //Recebendo resultado parcial após jogada.
 	}
 	
 	printf("\nJogo ecerredo!\n");
@@ -139,24 +111,30 @@ int diagSCheck(char **matriz, char jogador){
 	return 0;
 }
 
-int linhaCheck(int linha, char **matriz, char jogador){
-	int coluna = 0;
-	while (coluna < 3 && matriz[linha][coluna] == jogador){
-		coluna++;
+int linhaCheck(int linha, char **matriz, char caract){
+	int coluna, cont = 0;
+	for (coluna = 0; coluna < 3; coluna++){
+		if (matriz[linha][coluna] == caract)
+			cont++;
 	}
-	if (coluna == 3)
-		return 1;
-	return 0;
+	if (cont == 3)
+		return 1; //Caractere preenche linha
+	else if (cont > 0)
+		return 2; //Caractere está presente na linha
+	return 0;//Caractere não está presente coluna
 }
 
-int colunaCheck(int coluna, char **matriz, char jogador){
-	int linha = 0;
-	while (linha < 3 && matriz[linha][coluna] == jogador){
-		linha++;
+int colunaCheck(int coluna, char **matriz, char caract){
+	int linha, cont = 0;
+	for (linha = 0; linha < 3; linha++){
+		if (matriz[linha][coluna] == caract)
+			cont++;
 	}
-	if (linha == 3)
-		return 1;
-	return 0;
+	if (cont == 3)
+		return 1; //Caractere preenche coluna
+	else if (cont > 0)
+		return 2; //Caractere está presente na coluna
+	return 0;//Caractere não está presente na coluna
 }
 
 int check(char **matriz){
@@ -216,6 +194,35 @@ int check(char **matriz){
 
 	//Velha:
 	return 0;
+}
+
+void jogada(char **matriz, char jogador){
+	int linha, coluna;
+	printf("Linha: ");
+	scanf(" %d", &linha);
+
+	while (linha > 3 || linha < 1 || linhaCheck(linha-1, matriz, ' ') == 0){
+		if(linha > 3 || linha < 1)
+			printf("Entrada inválida!\nLinha (1 <-> 3): ");
+		else if (linhaCheck(linha-1, matriz, ' ') == 0)
+			printf("Essa linha já está preenchida!\nLinha: ");
+
+		scanf(" %d", &linha);	
+	}
+
+	printf("Coluna: ");
+	scanf(" %d", &coluna);
+
+	while (coluna > 3 || coluna < 1 || colunaCheck(coluna-1, matriz, ' ') == 0 || matriz[linha-1][coluna-1] != ' '){
+		if(coluna > 3 || coluna < 1)
+			printf("Entrada inválida!\nColuna (1 <-> 3): ");
+		else if (colunaCheck(coluna-1, matriz, ' ') == 0 || matriz[linha-1][coluna-1] != ' ')
+			printf("Esse campo já está preenchido!\nColuna: ");
+
+		scanf(" %d", &coluna);	
+	}
+
+	matriz[linha-1][coluna-1] = jogador;
 }
 
 void imprime(char **matriz){
